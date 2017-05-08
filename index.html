@@ -11,15 +11,10 @@
 
   <link rel="stylesheet" type="text/css" href="keen-dashboard.css" />
 
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"
-    integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ=="
-    crossorigin=""/>
-  <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"
-    integrity="sha512-A7vV8IFfih/D732iSSKi20u/ooOfj/AGehOKq0f4vLT1Zr2Y+RX7C+w8A1gaSasGtRUZpF/NZgzSAu4/Gc41Lg=="
-    crossorigin=""></script>
+<!--KM added code from my working Leaflet.draw example -->
 
-<script src="../Leaflet.draw-master/src/Leaflet.Draw.js"></script>
-  <link rel="stylesheet" href="../Leaflet.draw-master/src/leaflet.draw.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.9/leaflet.draw.css"/>
 
 
 </head>
@@ -69,22 +64,103 @@
           <div class="col-sm-12">
             <div class="chart-wrapper">
               <div class="chart-title">
-                Cell Title
+                Map
               </div>
               <div class="chart-stage">
-                <!--KM add Leaflet map, not sure if this is the right place-->
-              <div id="map" style = "width:100%; height:100%">
-                  var map = L.map('map', {drawControl: true}).setView([51.505, -0.09], 13);
-                       L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-                           attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                       }).addTo(map);
+                <!--KM I am pretty sure this is where to place code based on FF-->
+                <!--<img data-src="holder.js/100px360/white">-->
+<!--KM width and heigh should not be in px, but % does not work for me-->
 
+                <div id="map" style="width: 900px; height: 400px"></div>
 
-                       var OpenTopoMap = L.tileLayer('http://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-                       	maxZoom: 17,
-                       	attribution: 'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
-                       });
+                    <script
+                        src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js">
+                    </script>
+                    <script
+                        src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.9/leaflet.draw.js">
+                    </script>
 
+                    <script>
+                        var map = L.map('map').setView([-41.2858, 174.78682], 14);
+                        mapLink =
+                            '<a href="http://openstreetmap.org">OpenStreetMap</a>';
+                        L.tileLayer(
+                            'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: 'Map data &copy; ' + mapLink,
+                            maxZoom: 18,
+                            }).addTo(map);
+
+                		var LeafIcon = L.Icon.extend({
+                			options: {
+                				shadowUrl:
+                				    'http://leafletjs.com/docs/images/leaf-shadow.png',
+                				iconSize:     [38, 95],
+                				shadowSize:   [50, 64],
+                				iconAnchor:   [22, 94],
+                				shadowAnchor: [4, 62],
+                				popupAnchor:  [-3, -76]
+                			}
+                		});
+
+                		var greenIcon = new LeafIcon({
+                			iconUrl: 'http://leafletjs.com/docs/images/leaf-green.png'
+                			});
+
+                		var drawnItems = new L.FeatureGroup();
+                		map.addLayer(drawnItems);
+
+                		var drawControl = new L.Control.Draw({
+                			position: 'topright',
+                			draw: {
+                				polygon: {
+                					shapeOptions: {
+                						color: 'purple'
+                					},
+                					allowIntersection: false,
+                					drawError: {
+                						color: 'orange',
+                						timeout: 1000
+                					},
+                					showArea: true,
+                					metric: false,
+                					repeatMode: true
+                				},
+                				polyline: {
+                					shapeOptions: {
+                						color: 'red'
+                					},
+                				},
+                				rect: {
+                					shapeOptions: {
+                						color: 'green'
+                					},
+                				},
+                				circle: {
+                					shapeOptions: {
+                						color: 'steelblue'
+                					},
+                				},
+                				marker: {
+                					icon: greenIcon
+                				},
+                			},
+                			edit: {
+                				featureGroup: drawnItems
+                			}
+                		});
+                		map.addControl(drawControl);
+
+                		map.on('draw:created', function (e) {
+                			var type = e.layerType,
+                				layer = e.layer;
+
+                			if (type === 'marker') {
+                				layer.bindPopup('A popup!');
+                			}
+
+                			drawnItems.addLayer(layer);
+                		});
+                    </script>
 
               </div>
               <div class="chart-notes">
